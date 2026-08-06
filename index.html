@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>给你的一台小相机 · Osmo Pocket 4 使用说明书</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF8F6;
+  --surface:#FFFFFF;
+  --pink-050:#FDECEF;
+  --pink-100:#F9D7DE;
+  --pink-200:#F4B6C4;
+  --pink:#EA5A7C;
+  --pink-deep:#D13E63;
+  --ink:#402A33;
+  --ink-soft:#93707D;
+  --line:#F3DDE2;
+  --serif:"Noto Serif SC", "Songti SC", serif;
+  --sans:"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --shadow:0 10px 30px -12px rgba(209,62,99,.16);
+  --shadow-lg:0 24px 60px -20px rgba(209,62,99,.28);
+  --radius:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--pink-100);color:var(--pink-deep)}
+a{color:var(--pink-deep);text-decoration:none}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--pink);outline-offset:3px;border-radius:6px}
+svg{display:block;max-width:100%}
+button{font-family:var(--sans)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-delay="1"]{transition-delay:.1s}
+.reveal[data-delay="2"]{transition-delay:.2s}
+.reveal[data-delay="3"]{transition-delay:.3s}
+
+/* ---------- REC 角标 ---------- */
+.rec-hint{
+  position:fixed;top:calc(10px + env(safe-area-inset-top));right:14px;z-index:90;
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;letter-spacing:.14em;color:var(--ink-soft);
+  background:rgba(255,255,255,.85);backdrop-filter:blur(6px);
+  padding:5px 11px;border-radius:99px;border:1px solid var(--line);
+  pointer-events:none;
+}
+.rec-hint .dot{width:7px;height:7px;border-radius:50%;background:var(--pink-deep);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* ---------- Hero ---------- */
+.hero{
+  position:relative;overflow:hidden;
+  padding:calc(64px + env(safe-area-inset-top)) 0 26px;
+  text-align:center;
+}
+.hero .badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--line);
+  padding:7px 15px;border-radius:99px;font-size:12px;color:var(--ink-soft);
+  box-shadow:var(--shadow);letter-spacing:.08em;
+}
+.badge .heart{color:var(--pink)}
+.hero h1{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(30px,7.6vw,54px);line-height:1.3;margin:20px 0 14px;
+}
+.hero h1 em{font-style:normal;color:var(--pink-deep);position:relative;white-space:nowrap}
+.hero h1 em::after{
+  content:"";position:absolute;left:0;right:0;bottom:.08em;height:.32em;
+  background:var(--pink-100);z-index:-1;border-radius:4px;transform:skewX(-8deg);
+}
+.hero p.intro{color:var(--ink-soft);max-width:520px;margin:0 auto;font-size:15px}
+.petal{position:absolute;pointer-events:none;color:var(--pink-200);opacity:.5;animation:drift linear infinite;z-index:0}
+@keyframes drift{0%{transform:translateY(-6vh) rotate(0)}100%{transform:translateY(112vh) rotate(320deg)}}
+
+/* 开机相机 */
+.camera-stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:34px;z-index:1}
+.camera{
+  width:min(190px,52vw);cursor:pointer;
+  filter:drop-shadow(0 24px 32px rgba(64,42,51,.2));
+  transition:transform .4s cubic-bezier(.2,.7,.3,1.3);
+}
+.camera:hover{transform:translateY(-5px)}
+.screen-flip{transform-origin:150px 118px;transform-box:view-box;transition:transform .8s cubic-bezier(.6,.05,.2,1.2)}
+.camera.on .screen-flip{transform:rotate(90deg)}
+.screen-glow{opacity:0;transition:opacity .9s ease .35s}
+.camera.on .screen-glow{opacity:1}
+.screen-hint-text{transition:opacity .4s}
+.camera.on .screen-hint-text{opacity:0}
+.boot-caption{
+  font-size:13.5px;color:var(--ink-soft);text-align:center;
+  background:var(--surface);border:1px dashed var(--pink-200);
+  padding:9px 18px;border-radius:14px;max-width:300px;
+}
+.boot-caption strong{color:var(--pink-deep)}
+.fly-heart{position:fixed;pointer-events:none;z-index:300;font-size:18px;will-change:transform,opacity}
+
+/* ---------- 信 ---------- */
+.letter-sec{padding:44px 0 10px}
+.letter{
+  position:relative;max-width:640px;margin:0 auto;
+  background:linear-gradient(180deg,#FFFDF4,#FFF8E8);
+  border:1px solid #F1E3BC;border-radius:8px 26px 26px 26px;
+  padding:44px 30px 34px;
+  box-shadow:0 18px 44px -18px rgba(180,140,40,.35);
+}
+.letter::before{
+  content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-1.5deg);
+  width:96px;height:26px;background:rgba(249,215,222,.9);border-radius:3px;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.letter .to{
+  font-family:var(--serif);font-size:13px;letter-spacing:.32em;font-weight:700;
+  color:#B08A2E;text-align:center;margin-bottom:18px;
+}
+.letter h2{
+  font-family:var(--serif);font-weight:900;text-align:center;
+  font-size:clamp(22px,5.4vw,30px);line-height:1.5;margin-bottom:20px;
+}
+.letter p{font-size:14.5px;color:#6B5A2E;margin-bottom:14px}
+.letter .sign{
+  margin-top:26px;text-align:right;
+  font-family:var(--serif);font-size:17px;color:var(--pink-deep);
+}
+.letter .big-heart{
+  display:block;margin:18px auto 0;font-size:34px;background:none;border:none;cursor:pointer;
+  animation:beat 1.6s ease-in-out infinite;
+}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.22)}24%{transform:scale(1)}36%{transform:scale(1.14)}}
+
+/* ---------- 目录菜单 ---------- */
+.menu{padding:70px 0 30px}
+.menu-head{text-align:center;margin-bottom:34px}
+.menu-head .eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:12px;letter-spacing:.28em;font-weight:700;color:var(--pink-deep);
+}
+.menu-head .eyebrow::before,.menu-head .eyebrow::after{content:"";width:22px;height:2px;background:var(--pink);border-radius:2px}
+.menu-head h2{font-family:var(--serif);font-weight:900;font-size:clamp(24px,6vw,36px);margin-top:12px}
+.menu-head p{color:var(--ink-soft);font-size:14px;margin-top:8px}
+.chapter-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  max-width:860px;margin:0 auto;
+}
+.chapter-card{
+  display:flex;flex-direction:column;gap:6px;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 18px;cursor:pointer;box-shadow:var(--shadow);
+  transition:transform .3s cubic-bezier(.2,.7,.3,1.3),box-shadow .3s,border-color .3s;
+}
+.chapter-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--pink-200)}
+.chapter-card:active{transform:scale(.97)}
+.chapter-card .top{display:flex;align-items:center;justify-content:space-between}
+.chapter-card .icon{
+  width:44px;height:44px;border-radius:14px;background:var(--pink-050);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.chapter-card .no{font-family:var(--serif);font-weight:900;font-size:13px;color:var(--pink-200)}
+.chapter-card h3{font-family:var(--serif);font-size:17px;margin-top:10px}
+.chapter-card p{font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+.chapter-card .open-hint{font-size:11.5px;color:var(--pink-deep);font-weight:700;margin-top:8px;letter-spacing:.06em}
+
+footer{
+  border-top:1px solid var(--line);padding:24px 20px calc(24px + env(safe-area-inset-bottom));
+  text-align:center;font-size:12px;color:var(--ink-soft);letter-spacing:.04em;line-height:1.9;
+}
+
+/* ---------- 章节抽屉 / 浮层 ---------- */
+.sheet{
+  position:fixed;inset:0;z-index:200;background:var(--bg);
+  transform:translateY(103%);transition:transform .5s cubic-bezier(.2,.8,.25,1);
+  display:flex;flex-direction:column;
+}
+.sheet.open{transform:translateY(0)}
+.sheet-inner{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.sheet-head{
+  flex:none;display:flex;align-items:center;gap:12px;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background:rgba(255,248,246,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);z-index:2;
+}
+.back-btn{
+  flex:none;display:inline-flex;align-items:center;gap:4px;
+  background:var(--surface);border:1px solid var(--line);border-radius:99px;
+  padding:9px 16px 9px 12px;font-size:14px;font-weight:700;color:var(--pink-deep);
+  cursor:pointer;transition:background .25s,transform .25s;
+}
+.back-btn:hover{background:var(--pink-050)}
+.back-btn:active{transform:scale(.95)}
+.sheet-title{min-width:0}
+.sheet-title .crumb{font-size:10.5px;letter-spacing:.24em;color:var(--pink-deep);font-weight:700}
+.sheet-title h2{font-family:var(--serif);font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:28px 20px calc(60px + env(safe-area-inset-bottom))}
+.sheet-body .inner{max-width:860px;margin:0 auto}
+.sheet-lead{color:var(--ink-soft);font-size:14.5px;margin-bottom:34px;max-width:620px}
+
+/* ---------- 抽屉内组件（沿用说明书样式） ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);
+  transition:transform .3s cubic-bezier(.2,.7,.3,1.2),box-shadow .3s;
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr}
+.g3{grid-template-columns:1fr}
+
+.steps{display:grid;grid-template-columns:1fr;gap:14px;counter-reset:step}
+.step{
+  position:relative;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:26px 20px 22px;box-shadow:var(--shadow);
+}
+.step::before{
+  counter-increment:step;content:"0" counter(step);
+  font-family:var(--serif);font-weight:900;font-size:14px;color:var(--pink-deep);
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:13px;background:var(--pink-050);margin-bottom:14px;
+}
+.step h3{font-family:var(--serif);font-size:17px;margin-bottom:6px}
+.step p{font-size:13.5px;color:var(--ink-soft)}
+.step .mini{margin-top:12px;font-size:12px;color:var(--pink-deep);background:var(--pink-050);border-radius:10px;padding:8px 12px}
+
+.note{
+  position:relative;background:linear-gradient(180deg,#FFFDF4,#FFF8E6);
+  border:1px solid #F1E3BC;border-radius:4px 18px 18px 18px;
+  padding:18px 20px 16px;font-size:13.5px;color:#6B5A2E;
+  box-shadow:0 8px 20px -10px rgba(180,140,40,.3);
+  transform:rotate(-.6deg);margin-top:26px;
+}
+.note::before{
+  content:"💌 他的批注";display:block;font-size:11px;font-weight:700;
+  letter-spacing:.2em;color:#B08A2E;margin-bottom:6px;
+}
+.note.tape::after{
+  content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(2deg);
+  width:64px;height:20px;background:rgba(249,215,222,.85);border-radius:2px;
+}
+
+.bodymap{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+.diagram{
+  background:var(--surface);border:1px solid var(--line);border-radius:28px;
+  padding:30px 12px;box-shadow:var(--shadow);display:flex;justify-content:center;
+}
+.hotspot{cursor:pointer}
+.hotspot circle.ring{fill:var(--pink);opacity:.9;transition:transform .3s;transform-origin:center;transform-box:fill-box}
+.hotspot:hover circle.ring,.hotspot.lit circle.ring{transform:scale(1.35)}
+.hotspot.lit circle.ring{fill:var(--pink-deep)}
+.hotspot text{fill:#fff;font-size:12px;font-weight:700;text-anchor:middle;pointer-events:none}
+.legend{display:flex;flex-direction:column;gap:10px}
+.legend-item{
+  display:flex;gap:14px;align-items:flex-start;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:15px 16px;cursor:pointer;transition:border-color .3s,transform .3s,box-shadow .3s;
+}
+.legend-item:hover,.legend-item.lit{border-color:var(--pink);transform:translateX(5px);box-shadow:var(--shadow)}
+.legend-item .num{
+  flex:none;width:28px;height:28px;border-radius:9px;background:var(--pink-050);
+  color:var(--pink-deep);font-weight:700;font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+}
+.legend-item.lit .num{background:var(--pink);color:#fff}
+.legend-item h4{font-size:14.5px;margin-bottom:2px}
+.legend-item p{font-size:12.5px;color:var(--ink-soft);line-height:1.65}
+
+.op-card .icon{
+  width:48px;height:48px;border-radius:15px;background:var(--pink-050);
+  display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;
+}
+.op-card h3{font-family:var(--serif);font-size:17px;margin-bottom:6px}
+.op-card p{font-size:13.5px;color:var(--ink-soft)}
+.op-card kbd{
+  display:inline-block;background:var(--pink-050);color:var(--pink-deep);
+  border-radius:8px;padding:2px 10px;font-size:12px;font-weight:700;
+  font-family:var(--sans);margin:3px 2px 0 0;border:1px solid var(--pink-100);
+}
+
+.gimbal-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.gtab{
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+  padding:9px 18px;border-radius:99px;font-size:13.5px;font-weight:500;
+  cursor:pointer;transition:all .3s;
+}
+.gtab:hover{border-color:var(--pink);color:var(--pink-deep)}
+.gtab.active{background:var(--pink);color:#fff;border-color:var(--pink);box-shadow:0 10px 22px -8px rgba(234,90,124,.5)}
+.gpanel{display:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.gpanel.show{display:grid;grid-template-columns:1fr;gap:20px;align-items:center;animation:panelIn .45s cubic-bezier(.2,.7,.3,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.gpanel h3{font-family:var(--serif);font-size:20px;margin-bottom:8px}
+.gpanel p{font-size:14px;color:var(--ink-soft)}
+.gpanel .use{margin-top:12px;font-size:13px;color:var(--pink-deep);background:var(--pink-050);border-radius:12px;padding:9px 14px;display:inline-block}
+.gimbal-demo{background:var(--pink-050);border-radius:16px;padding:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+.mode-card{display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.mode-card .tag{
+  position:absolute;top:18px;right:18px;font-size:11px;font-weight:700;
+  letter-spacing:.1em;color:var(--pink-deep);background:var(--pink-050);
+  padding:4px 11px;border-radius:99px;
+}
+.mode-card h3{font-family:var(--serif);font-size:19px}
+.mode-card .spec{font-size:12px;color:var(--pink-deep);font-weight:700;letter-spacing:.04em}
+.mode-card p{font-size:13.5px;color:var(--ink-soft)}
+.mode-card .scene{font-size:13px;border-top:1px dashed var(--line);padding-top:10px;color:var(--ink)}
+.mode-card .scene b{color:var(--pink-deep)}
+
+.smart-card h3{font-family:var(--serif);font-size:19px;margin-bottom:8px}
+.smart-card p{font-size:13.5px;color:var(--ink-soft)}
+.smart-card .demo{
+  margin-top:14px;background:var(--pink-050);border-radius:16px;padding:16px;
+  display:flex;align-items:center;justify-content:center;gap:18px;min-height:100px;overflow:hidden;
+}
+.gesture{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);text-align:center}
+.gesture .hand{font-size:32px;line-height:1;animation:wave 2.2s ease-in-out infinite}
+.gesture:nth-child(3) .hand{animation-delay:.6s}
+@keyframes wave{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg) scale(1.08)}60%{transform:rotate(8deg)}}
+.arrow{color:var(--pink-200);font-size:18px}
+
+.sub-h{font-family:var(--serif);font-size:19px;margin:36px 0 16px}
+.sub-h:first-child{margin-top:0}
+.tip-row{display:grid;grid-template-columns:1fr;gap:16px}
+.tip-card h3{font-family:var(--serif);font-size:18px;margin:12px 0 6px}
+.tip-card p{font-size:13.5px;color:var(--ink-soft)}
+.tip-visual{height:110px;border-radius:14px;background:var(--pink-050);position:relative;overflow:hidden}
+.anim-pan .dot-move{animation:pan 3.2s ease-in-out infinite}
+@keyframes pan{0%,100%{transform:translateX(14px)}50%{transform:translateX(calc(100% - 30px))}}
+.anim-push .dot-move{animation:push 3.2s ease-in-out infinite}
+@keyframes push{0%,100%{transform:scale(.5);opacity:.5}50%{transform:scale(1.15);opacity:1}}
+.anim-orbit .dot-move{animation:orbit 4s linear infinite}
+@keyframes orbit{from{transform:rotate(0) translateX(34px) rotate(0)}to{transform:rotate(360deg) translateX(34px) rotate(-360deg)}}
+.dot-move{position:absolute;width:15px;height:15px;border-radius:50%;background:var(--pink-deep);box-shadow:0 0 0 6px var(--pink-100)}
+.frame-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);min-width:560px}
+.frame-table th,.frame-table td{padding:14px 16px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--line)}
+.frame-table th{background:var(--pink-050);font-family:var(--serif);font-size:14px;color:var(--pink-deep)}
+.frame-table tr:last-child td{border-bottom:none}
+.frame-table td:first-child{font-weight:700;white-space:nowrap}
+.frame-table td{color:var(--ink-soft)}
+.table-scroll{overflow-x:auto;border-radius:var(--radius)}
+
+.faq details{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  margin-bottom:12px;overflow:hidden;transition:box-shadow .3s;
+}
+.faq details[open]{box-shadow:var(--shadow);border-color:var(--pink-200)}
+.faq summary{
+  list-style:none;cursor:pointer;padding:18px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  font-weight:700;font-size:14.5px;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .chev{flex:none;width:26px;height:26px;border-radius:50%;background:var(--pink-050);color:var(--pink-deep);display:flex;align-items:center;justify-content:center;font-size:14px;transition:transform .35s}
+.faq details[open] summary .chev{transform:rotate(45deg);background:var(--pink);color:#fff}
+.faq .answer{padding:0 20px 20px;font-size:13.5px;color:var(--ink-soft)}
+.faq .answer b{color:var(--ink)}
+
+.res-card{display:flex;flex-direction:column;gap:6px;color:var(--ink)}
+.res-card .icon{font-size:24px}
+.res-card h3{font-family:var(--serif);font-size:17px}
+.res-card p{font-size:13px;color:var(--ink-soft);flex:1}
+.res-card .go{font-size:13px;font-weight:700;color:var(--pink-deep)}
+.res-card:hover .go{text-decoration:underline}
+
+/* ---------- PC 适配 ---------- */
+@media(min-width:760px){
+  .hero{text-align:left;padding-top:110px}
+  .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+  .hero p.intro{margin:0}
+  .camera-stage{margin-top:0}
+  .camera{width:min(260px,26vw)}
+  .chapter-grid{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .bodymap{grid-template-columns:.9fr 1.1fr;gap:40px}
+  .tip-row{grid-template-columns:repeat(3,1fr)}
+  .gpanel.show{grid-template-columns:220px 1fr;gap:32px}
+  .sheet{
+    background:rgba(64,42,51,.42);backdrop-filter:blur(6px);
+    transform:none;opacity:0;pointer-events:none;transition:opacity .3s;
+    align-items:center;justify-content:center;padding:36px 24px;
+  }
+  .sheet.open{opacity:1;pointer-events:auto}
+  .sheet-inner{
+    flex:none;height:auto;max-height:100%;width:min(860px,100%);
+    background:var(--bg);border-radius:26px;overflow:hidden;
+    box-shadow:0 44px 100px -30px rgba(64,42,51,.55);
+    transform:translateY(30px) scale(.965);opacity:0;
+    transition:transform .45s cubic-bezier(.2,.8,.25,1.08),opacity .3s;
+  }
+  .sheet.open .sheet-inner{transform:none;opacity:1}
+  .sheet-head{padding-top:16px}
+}
+@media(min-width:1060px){
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .steps{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:380px){
+  .chapter-grid{gap:10px}
+  .chapter-card{padding:16px 14px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="rec-hint"><span class="dot"></span>REC</div>
+
+<main id="home">
+  <!-- ============ 首屏 ============ -->
+  <header class="hero" id="intro">
+    <div class="wrap">
+      <div class="hero-text">
+        <span class="badge"><span class="heart">♥</span> 礼物附件 · 一份写给你的说明书</span>
+        <h1>这台小相机，<br>和我没说出口的<em>一些话</em></h1>
+        <p class="intro">
+          送你 Osmo Pocket 4，不是想让你研究参数，是想让你随手就能拍下自己喜欢的样子。
+          我替你读完了官方说明书，把它翻译成了这一页——点你感兴趣的部分看就好。
+        </p>
+      </div>
+      <div class="camera-stage">
+        <svg class="camera" id="heroCamera" viewBox="0 0 300 520" role="button" tabindex="0" aria-label="点击屏幕，旋转开机">
+          <g>
+            <rect x="118" y="8" width="64" height="58" rx="18" fill="#33262D"/>
+            <circle cx="150" cy="37" r="22" fill="#1E151A"/>
+            <circle cx="150" cy="37" r="15" fill="#3B2B48"/>
+            <circle cx="145" cy="32" r="5" fill="#7E6B8F" opacity=".8"/>
+            <circle cx="155" cy="42" r="2.5" fill="#B9A6C9" opacity=".6"/>
+            <rect x="180" y="26" width="10" height="22" rx="5" fill="#4A3841"/>
+          </g>
+          <rect x="102" y="62" width="96" height="390" rx="34" fill="#3D2E35"/>
+          <rect x="102" y="62" width="96" height="390" rx="34" fill="url(#bodyGrad)"/>
+          <rect x="112" y="80" width="76" height="76" rx="14" fill="#241A1F"/>
+          <g class="screen-flip">
+            <rect x="116" y="84" width="68" height="68" rx="11" fill="#0E0A0D"/>
+            <rect class="screen-glow" x="116" y="84" width="68" height="68" rx="11" fill="url(#screenGrad)"/>
+            <g class="screen-glow">
+              <text x="150" y="116" text-anchor="middle" font-size="17" fill="#fff">♥</text>
+              <text x="150" y="136" text-anchor="middle" font-size="8.5" fill="#FFE3EA" font-family="Noto Sans SC">为你开机</text>
+            </g>
+            <text class="screen-hint-text" x="150" y="112" text-anchor="middle" font-size="8" fill="#6E5560" font-family="Noto Sans SC">点我</text>
+            <text class="screen-hint-text" x="150" y="126" text-anchor="middle" font-size="8" fill="#6E5560" font-family="Noto Sans SC">旋屏开机</text>
+          </g>
+          <circle cx="150" cy="196" r="15" fill="#241A1F"/>
+          <circle cx="150" cy="193" r="12" fill="#524049"/>
+          <circle cx="150" cy="246" r="11" fill="#241A1F"/>
+          <circle cx="150" cy="246" r="7.5" fill="#D13E63"/>
+          <rect x="118" y="278" width="28" height="12" rx="6" fill="#241A1F"/>
+          <rect x="154" y="278" width="28" height="12" rx="6" fill="#241A1F"/>
+          <circle cx="122" cy="320" r="2" fill="#241A1F"/><circle cx="132" cy="320" r="2" fill="#241A1F"/>
+          <rect x="128" y="436" width="44" height="8" rx="4" fill="#241A1F"/>
+          <defs>
+            <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#524049" stop-opacity=".55"/>
+              <stop offset=".5" stop-color="#524049" stop-opacity="0"/>
+              <stop offset="1" stop-color="#241A1F" stop-opacity=".5"/>
+            </linearGradient>
+            <linearGradient id="screenGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F47C9B"/>
+              <stop offset="1" stop-color="#D13E63"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="boot-caption" id="bootCaption">
+          和真机一样——<strong>点一下屏幕</strong>，旋转开机
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 信（C 位） ============ -->
+  <section class="letter-sec" id="letter">
+    <div class="wrap">
+      <div class="letter reveal">
+        <div class="to">写 给 你 的 话</div>
+        <h2>说明书会过时，<br>但镜头里的你不会</h2>
+        <p>
+          这台相机会存下很多东西：一次旅行、一顿生日晚餐、某个普通但阳光很好的下午。
+          它们攒起来，就是我们的日子。
+        </p>
+        <p>
+          所以别把它供在抽屉里。随便拍、大胆拍、拍坏了删了重拍。
+          内存满了，我帮你导出来收好；哪个功能不会用了，翻回这一页；
+          懒得翻了——直接喊我。
+        </p>
+        <p>下面每一章我都试过了才写的，挑你感兴趣的看，不用按顺序。</p>
+        <div class="sign">—— 你的专属说明书作者<br>兼终身摄影助理</div>
+        <button class="big-heart" id="finaleHeart" aria-label="点我有惊喜">🩷</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 章节目录 ============ -->
+  <section class="menu" id="menu">
+    <div class="wrap">
+      <div class="menu-head reveal">
+        <span class="eyebrow">目 录</span>
+        <h2>想先看哪个？</h2>
+        <p>点一张卡片打开对应章节，看完点左上角回来</p>
+      </div>
+      <div class="chapter-grid">
+        <button class="chapter-card reveal" data-sheet="sheet-unbox">
+          <div class="top"><span class="icon">🎀</span><span class="no">01</span></div>
+          <h3>开机初见</h3><p>四步：从盒子里到拍出第一段视频</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-delay="1" data-sheet="sheet-bodymap">
+          <div class="top"><span class="icon">🔘</span><span class="no">02</span></div>
+          <h3>按键图解</h3><p>全身上下就这几个键，点点看</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-delay="2" data-sheet="sheet-basic">
+          <div class="top"><span class="icon">🕹️</span><span class="no">03</span></div>
+          <h3>基础操作</h3><p>一分钟上手，按错也不会坏</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-sheet="sheet-gimbal">
+          <div class="top"><span class="icon">🎥</span><span class="no">04</span></div>
+          <h3>云台模式</h3><p>三种运镜手感，电影感的来源</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-delay="1" data-sheet="sheet-modes">
+          <div class="top"><span class="icon">🌈</span><span class="no">05</span></div>
+          <h3>拍摄模式</h3><p>七种模式，对应七种心情</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-delay="2" data-sheet="sheet-smart">
+          <div class="top"><span class="icon">✨</span><span class="no">06</span></div>
+          <h3>智能功能</h3><p>你只管美，构图交给它</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-sheet="sheet-tips">
+          <div class="top"><span class="icon">💡</span><span class="no">07</span></div>
+          <h3>拍摄技巧</h3><p>几个小心机，赢很大</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-delay="1" data-sheet="sheet-faq">
+          <div class="top"><span class="icon">🙋</span><span class="no">08</span></div>
+          <h3>常见问答</h3><p>卡住了？先看这里</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+        <button class="chapter-card reveal" data-delay="2" data-sheet="sheet-links">
+          <div class="top"><span class="icon">📖</span><span class="no">09</span></div>
+          <h3>官方资源</h3><p>图解、视频、App 下载入口</p>
+          <span class="open-hint">打开 →</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    本页为礼物附赠的非官方使用指南 · 参数以大疆官网为准<br>制作时充满了爱 ♥
+  </footer>
+</main>
+
+<!-- ============ 01 开机 ============ -->
+<div class="sheet" id="sheet-unbox" hidden role="dialog" aria-modal="true" aria-label="开机初见">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 01 · 初见</div><h2>第一次见面，这样做</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">从盒子里拿出来到拍出第一段视频，只要四步。第一次使用记得先充电、再用手机激活，之后就再也不用激活了。</p>
+      <div class="steps">
+        <div class="step">
+          <h3>先喂饱它</h3>
+          <p>用 USB-C 线给它充电，包装盒旁边我放了充电头。支持 PD 快充，一顿早饭的时间就够用大半天。</p>
+          <div class="mini">小脾气：插着电录像时它不充电，停下来才偷偷充</div>
+        </div>
+        <div class="step">
+          <h3>摘掉保护夹</h3>
+          <p>开机前先取下卡在三轴云台上的保护夹——它是运输时保护镜头云台的，不摘掉云台转不动。</p>
+          <div class="mini">保护夹别丢，平时放包里时还能用</div>
+        </div>
+        <div class="step">
+          <h3>旋屏开机</h3>
+          <p>最有仪式感的一步：<b>顺时针一转触摸屏</b>，它就醒了（短按一下红色拍摄键也可以）。想关机，就长按拍摄键，或把屏幕转回去。</p>
+          <div class="mini">转屏幕 = 开机，这就是它的打招呼方式</div>
+        </div>
+        <div class="step">
+          <h3>手机激活</h3>
+          <p>手机装一个 <b>DJI Mimo</b>（相机屏幕上有二维码可扫），打开 Wi-Fi 和蓝牙，点 App 首页的相机图标连接，按提示激活。</p>
+          <div class="mini">只有第一次需要激活，之后随开随拍</div>
+        </div>
+      </div>
+      <div class="note tape">激活那步我已经提前帮你弄好了，Wi-Fi 也连过家里了。你拿到手，转一下屏幕就能直接拍——惊喜不该卡在激活页面上。</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 02 按键 ============ -->
+<div class="sheet" id="sheet-bodymap" hidden role="dialog" aria-modal="true" aria-label="按键图解">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 02 · 认识它</div><h2>全身上下，就这几个键</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">它比手机小得多（只有 190 克，跟你粉饼盒差不多沉），按钮一只手数得过来。点点图上的小圆点，看看每个部位是干嘛的。</p>
+      <div class="bodymap">
+        <div class="diagram">
+          <svg viewBox="0 0 300 520" width="250" aria-label="Pocket 4 机身按键图解">
+            <rect x="118" y="8" width="64" height="58" rx="18" fill="#33262D"/>
+            <circle cx="150" cy="37" r="22" fill="#1E151A"/>
+            <circle cx="150" cy="37" r="15" fill="#3B2B48"/>
+            <circle cx="145" cy="32" r="5" fill="#7E6B8F" opacity=".8"/>
+            <rect x="102" y="62" width="96" height="390" rx="34" fill="#46363E"/>
+            <rect x="112" y="80" width="76" height="76" rx="14" fill="#241A1F"/>
+            <rect x="118" y="86" width="64" height="64" rx="10" fill="#F4B6C4" opacity=".9"/>
+            <text x="150" y="124" text-anchor="middle" font-size="10" fill="#D13E63" font-family="Noto Sans SC">2.0″ 触摸屏</text>
+            <circle cx="150" cy="196" r="15" fill="#241A1F"/><circle cx="150" cy="193" r="12" fill="#6E5560"/>
+            <circle cx="150" cy="246" r="11" fill="#241A1F"/><circle cx="150" cy="246" r="7.5" fill="#D13E63"/>
+            <rect x="118" y="278" width="28" height="12" rx="6" fill="#241A1F"/>
+            <rect x="154" y="278" width="28" height="12" rx="6" fill="#241A1F"/>
+            <rect x="196" y="330" width="6" height="60" rx="3" fill="#241A1F"/>
+            <rect x="128" y="436" width="44" height="8" rx="4" fill="#241A1F"/>
+            <g class="hotspot" data-key="1"><circle class="ring" cx="215" cy="37" r="13"/><text x="215" y="41.5">1</text></g>
+            <g class="hotspot" data-key="2"><circle class="ring" cx="215" cy="118" r="13"/><text x="215" y="122.5">2</text></g>
+            <g class="hotspot" data-key="3"><circle class="ring" cx="215" cy="193" r="13"/><text x="215" y="197.5">3</text></g>
+            <g class="hotspot" data-key="4"><circle class="ring" cx="215" cy="246" r="13"/><text x="215" y="250.5">4</text></g>
+            <g class="hotspot" data-key="5"><circle class="ring" cx="215" cy="284" r="13"/><text x="215" y="288.5">5</text></g>
+            <g class="hotspot" data-key="6"><circle class="ring" cx="90" cy="360" r="13"/><text x="90" y="364.5">6</text></g>
+            <g class="hotspot" data-key="7"><circle class="ring" cx="215" cy="440" r="13"/><text x="215" y="444.5">7</text></g>
+          </svg>
+        </div>
+        <div class="legend">
+          <div class="legend-item" data-key="1"><span class="num">1</span><div><h4>一英寸大眼睛（镜头 + 三轴云台）</h4><p>1 英寸 CMOS、f/2.0 光圈，画质比手机还稳。云台会像小鸡脑袋一样自动稳住画面，你跑动它都不晃。</p></div></div>
+          <div class="legend-item" data-key="2"><span class="num">2</span><div><h4>2 英寸 OLED 旋转触摸屏</h4><p>点按、滑动都在这。顺时针旋转 = 开机，还能切换横竖构图，1000 尼特亮度，大太阳下也看得清。</p></div></div>
+          <div class="legend-item" data-key="3"><span class="num">3</span><div><h4>五维摇杆</h4><p>上下左右拨 = 转动镜头方向；<b>双击回中</b>；<b>三击把镜头转过来自拍</b>。</p></div></div>
+          <div class="legend-item" data-key="4"><span class="num">4</span><div><h4>拍摄键（红色）</h4><p>短按拍照 / 开始录像，再按停止；长按开关机。一句话：想记录了，就按它。</p></div></div>
+          <div class="legend-item" data-key="5"><span class="num">5</span><div><h4>变焦键 + 自定义键</h4><p>变焦键：单击在 1×/2× 间切换，双击直接到 4×。自定义键长按触发你设好的功能（我把它设成了「切换自拍」）。</p></div></div>
+          <div class="legend-item" data-key="6"><span class="num">6</span><div><h4>microSD 卡槽（侧面）</h4><p>机身自带 107GB 存储，日常够拍很久；想拍 4K 长视频可以再加一张卡，最大支持 1TB。</p></div></div>
+          <div class="legend-item" data-key="7"><span class="num">7</span><div><h4>USB-C 口（底部）</h4><p>充电、连电脑导素材、甚至能当电脑摄像头，一口多用。</p></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 03 基础操作 ============ -->
+<div class="sheet" id="sheet-basic" hidden role="dialog" aria-modal="true" aria-label="基础操作">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 03 · 一学就会</div><h2>上手只要一分钟</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">下面这六个动作覆盖 90% 的日常使用。建议拿着真机，一边看一边按一遍——按错也不会坏，放心大胆地试。</p>
+      <div class="grid g3">
+        <div class="card op-card">
+          <div class="icon">🎬</div>
+          <h3>开始 / 停止拍摄</h3>
+          <p>按一下红色拍摄键就开始，再按一下就停。开机默认是录像模式，想换模式点屏幕<b>左下角的小图标</b>。</p>
+          <div><kbd>短按 · 拍</kbd><kbd>再按 · 停</kbd></div>
+        </div>
+        <div class="card op-card">
+          <div class="icon">🕹️</div>
+          <h3>转动镜头</h3>
+          <p>拨动摇杆，镜头就朝那个方向转。拨轻一点转得慢，画面更稳更好看。</p>
+          <div><kbd>拨动 · 转镜头</kbd><kbd>双击 · 回正</kbd><kbd>三击 · 自拍</kbd></div>
+        </div>
+        <div class="card op-card">
+          <div class="icon">🔍</div>
+          <h3>拉近拉远</h3>
+          <p>按变焦键：<b>单击</b>在 1× 和 2× 之间切换（2× 是无损画质哦），<b>双击</b>直接跳到 4×。</p>
+          <div><kbd>单击 · 1×/2×</kbd><kbd>双击 · 4×</kbd></div>
+        </div>
+        <div class="card op-card">
+          <div class="icon">📱</div>
+          <h3>屏幕手势</h3>
+          <p>和手机一样：从屏幕<b>顶部下滑</b>打开快捷设置，点屏幕可以框选要对焦、要跟随的目标。</p>
+          <div><kbd>下滑 · 设置</kbd><kbd>点按 · 对焦</kbd></div>
+        </div>
+        <div class="card op-card">
+          <div class="icon">🔄</div>
+          <h3>横拍 / 竖拍</h3>
+          <p>开机时旋转屏幕就能切换横竖构图：横着拍风景和你，竖着拍要发小红书和抖音的素材。</p>
+          <div><kbd>注意</kbd><span style="font-size:12.5px;color:var(--ink-soft)">按下录制后方向就锁定了，先想好再开拍</span></div>
+        </div>
+        <div class="card op-card">
+          <div class="icon">📲</div>
+          <h3>连手机看大片</h3>
+          <p>打开 DJI Mimo 自动连接：大屏监看、调参数、一键把视频导到手机发朋友圈，还能顺便升级固件。</p>
+          <div><kbd>导出</kbd><span style="font-size:12.5px;color:var(--ink-soft)">也可以用 USB-C 线连电脑直接拷</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 04 云台 ============ -->
+<div class="sheet" id="sheet-gimbal" hidden role="dialog" aria-modal="true" aria-label="云台模式">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 04 · 云台的三种性格</div><h2>同一个云台，三种运镜手感</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">在设置里可以切换云台模式，还能选「慢 / 中 / 快」三挡转动速度。日常用默认增稳就够了，想玩花样再试另外两个。</p>
+      <div class="gimbal-tabs" role="tablist">
+        <button class="gtab active" data-panel="p1" role="tab">默认增稳</button>
+        <button class="gtab" data-panel="p2" role="tab">俯仰锁定</button>
+        <button class="gtab" data-panel="p3" role="tab">FPV 模式</button>
+      </div>
+      <div class="gpanel show" id="p1">
+        <div class="gimbal-demo">
+          <svg viewBox="0 0 200 120" width="200" aria-hidden="true">
+            <line x1="20" y1="95" x2="180" y2="95" stroke="#F4B6C4" stroke-width="3" stroke-dasharray="6 6"/>
+            <g><rect x="88" y="40" width="24" height="55" rx="9" fill="#402A33"/><circle cx="100" cy="34" r="14" fill="#402A33"/><circle cx="100" cy="34" r="8" fill="#3B2B48"/></g>
+            <text x="100" y="115" text-anchor="middle" font-size="10" fill="#93707D" font-family="Noto Sans SC">画面永远水平，怎么动都稳</text>
+          </svg>
+        </div>
+        <div>
+          <h3>默认增稳 · 万能档</h3>
+          <p>无论你怎么走、怎么转身，镜头都稳稳地保持水平。走路 vlog、旅行记录、拍你吃饭逛街，全都用它。</p>
+          <span class="use">👉 不知道用哪个的时候，就用它</span>
+        </div>
+      </div>
+      <div class="gpanel" id="p2">
+        <div class="gimbal-demo">
+          <svg viewBox="0 0 200 120" width="200" aria-hidden="true">
+            <line x1="20" y1="95" x2="180" y2="95" stroke="#F4B6C4" stroke-width="3" stroke-dasharray="6 6"/>
+            <line x1="100" y1="20" x2="100" y2="100" stroke="#F9D7DE" stroke-width="2"/>
+            <g><rect x="88" y="40" width="24" height="55" rx="9" fill="#402A33"/><circle cx="100" cy="34" r="14" fill="#402A33"/><circle cx="100" cy="34" r="8" fill="#3B2B48"/></g>
+            <path d="M60 60 L140 60" stroke="#D13E63" stroke-width="3" marker-end="url(#arrH)"/>
+            <defs><marker id="arrH" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#D13E63"/></marker></defs>
+            <text x="100" y="115" text-anchor="middle" font-size="10" fill="#93707D" font-family="Noto Sans SC">只跟着你左右转，不抬头不低头</text>
+          </svg>
+        </div>
+        <div>
+          <h3>俯仰锁定 · 推拉平移专用</h3>
+          <p>镜头俯仰角度被锁住，只随你左右平移。拍「走向镜头」「从咖啡馆这头推到那头」这类运镜，画面像滑轨一样直。</p>
+          <span class="use">👉 拍走路带风的镜头，选它</span>
+        </div>
+      </div>
+      <div class="gpanel" id="p3">
+        <div class="gimbal-demo">
+          <svg viewBox="0 0 200 120" width="200" aria-hidden="true">
+            <line x1="20" y1="95" x2="180" y2="95" stroke="#F4B6C4" stroke-width="3" stroke-dasharray="6 6"/>
+            <g transform="rotate(-18 100 65)"><rect x="88" y="40" width="24" height="55" rx="9" fill="#402A33"/><circle cx="100" cy="34" r="14" fill="#402A33"/><circle cx="100" cy="34" r="8" fill="#3B2B48"/></g>
+            <text x="100" y="115" text-anchor="middle" font-size="10" fill="#93707D" font-family="Noto Sans SC">跟着手腕翻滚，第一人称视角</text>
+          </svg>
+        </div>
+        <div>
+          <h3>FPV · 沉浸式过山车</h3>
+          <p>云台会跟着你手腕的翻转动，画面会倾斜、旋转，拍出来的东西特别有「第一人称」的冲击感。</p>
+          <span class="use">👉 游乐场、滑板、骑行时玩一玩</span>
+        </div>
+      </div>
+      <div class="note">云台转动速度建议在「慢」或「中」——慢速转出来的运镜最丝滑，电影感全靠它。</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 05 模式 ============ -->
+<div class="sheet" id="sheet-modes" hidden role="dialog" aria-modal="true" aria-label="拍摄模式">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 05 · 拍点什么</div><h2>七种模式，对应七种心情</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">点屏幕左下角切换模式。每个模式我都写了「什么时候用」，照着拍就行。</p>
+      <div class="grid g3">
+        <div class="card mode-card">
+          <span class="tag">最常用</span>
+          <h3>普通录影</h3>
+          <span class="spec">4K / 60fps · 180Mbps · 10-bit D-Log</span>
+          <p>画质主力。日常选 4K/30 就够，动作多就选 4K/60，后期慢放也流畅。</p>
+          <div class="scene"><b>适合：</b>旅行 vlog、记录日常、拍我们之间的小事</div>
+        </div>
+        <div class="card mode-card">
+          <span class="tag">超好玩</span>
+          <h3>慢动作</h3>
+          <span class="spec">最高 4K / 240fps</span>
+          <p>把一瞬间拉长成八倍。甩头发、吹蜡烛、跳水花、接住的雪花，全都值得慢下来看。</p>
+          <div class="scene"><b>适合：</b>转圈、跳跃、宠物扑过来的瞬间</div>
+        </div>
+        <div class="card mode-card">
+          <span class="tag">氛围感</span>
+          <h3>低光视频</h3>
+          <span class="spec">4K / 30fps · ISO 最高 25600</span>
+          <p>太阳下山后的专属模式。夜市、烛光晚餐、江边散步，暗光下画面也干净。</p>
+          <div class="scene"><b>适合：</b>夜景、餐厅、演唱会、跨年烟火</div>
+        </div>
+        <div class="card mode-card">
+          <span class="tag">时间魔法</span>
+          <h3>延时摄影 ×3</h3>
+          <span class="spec">静止延时 / 运动延时 / 轨迹延时</span>
+          <p>把一小时压成十几秒。架在窗台拍云走、拍城市天亮；运动延时边走边拍，轨迹延时可以预设镜头转动路线。</p>
+          <div class="scene"><b>适合：</b>日落、车流、一朵花开的下午</div>
+        </div>
+        <div class="card mode-card">
+          <span class="tag">到此一游</span>
+          <h3>拍照 · 全景</h3>
+          <span class="spec">约 3700 万像素 · JPEG + DNG</span>
+          <p>单张、倒计时自拍都有。全景模式会自动转着拼出一张超宽大片，人站在中间就好。</p>
+          <div class="scene"><b>适合：</b>大合照、山顶、海边、整片花海</div>
+        </div>
+        <div class="card mode-card">
+          <span class="tag">彩蛋</span>
+          <h3>还能当摄像头</h3>
+          <span class="spec">USB-C 直连电脑</span>
+          <p>用数据线连上电脑，它就是一枚带云台的超清网络摄像头，视频会议里你最清晰。</p>
+          <div class="scene"><b>适合：</b>视频通话、直播、远程给我看看你</div>
+        </div>
+      </div>
+      <div class="note tape">慢动作模式我替你试过了：拍你转身甩头发那个瞬间，240 帧慢放，真的，每一帧都好看。</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 06 智能 ============ -->
+<div class="sheet" id="sheet-smart" hidden role="dialog" aria-modal="true" aria-label="智能功能">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 06 · 它比你想象的聪明</div><h2>你只管美，构图交给它</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">这几个功能是 Pocket 4 的灵魂。学会之后，一个人也能拍出「有摄影师跟拍」的效果。</p>
+      <div class="grid g2">
+        <div class="card smart-card">
+          <h3>🎯 智能跟随 7.0</h3>
+          <p>在屏幕上<b>双击或框选</b>你自己（或者猫、或者我），镜头就会一直跟着走，最远能跟 10 米，最高支持 4 倍变焦跟随。单击画面别处或按一下摇杆即可退出。</p>
+          <div class="demo">
+            <svg viewBox="0 0 240 100" width="240" aria-hidden="true">
+              <rect x="14" y="18" width="70" height="64" rx="10" fill="#fff" stroke="#F4B6C4" stroke-width="2"/>
+              <circle cx="49" cy="42" r="10" fill="#F9D7DE"/><path d="M33 74 Q49 54 65 74" fill="#F9D7DE"/>
+              <rect x="36" y="28" width="26" height="26" rx="4" fill="none" stroke="#D13E63" stroke-width="2" stroke-dasharray="4 3"/>
+              <path d="M95 50 L150 50" stroke="#D13E63" stroke-width="2.5" marker-end="url(#arrF)"/>
+              <defs><marker id="arrF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#D13E63"/></marker></defs>
+              <g transform="translate(165,22)"><rect x="0" y="14" width="26" height="46" rx="9" fill="#402A33"/><circle cx="13" cy="10" r="12" fill="#402A33"/><circle cx="13" cy="10" r="7" fill="#3B2B48"/></g>
+              <text x="178" y="92" text-anchor="middle" font-size="10" fill="#93707D" font-family="Noto Sans SC">镜头自动跟着转</text>
+            </svg>
+          </div>
+          <p style="margin-top:14px;font-size:13px">还有进阶玩法：<b>预构图跟随</b>能把你固定在画面黄金分割点上，「任意构图」则你站哪它拍哪。登记「主角」后（最多 3 人），人多它也认得出你。</p>
+        </div>
+        <div class="card smart-card">
+          <h3>✋ 手势控制</h3>
+          <p>没人帮忙按快门的时候，对着镜头比手势就行（1× 下 0.5~5 米内有效，2× 下最远 7 米）：</p>
+          <div class="demo">
+            <div class="gesture"><span class="hand">🖐</span><span>手掌<br>开始 / 停止跟随</span></div>
+            <span class="arrow">·</span>
+            <div class="gesture"><span class="hand">✌️</span><span>剪刀手<br>拍照 / 开始录像</span></div>
+          </div>
+          <p style="margin-top:14px;font-size:13px">架在桌上、远处自拍合影就靠它。记得脸别被头发挡住，它要看清楚你才认手势。</p>
+        </div>
+        <div class="card smart-card">
+          <h3>🌸 人像与美颜</h3>
+          <p>机内自带<b>肤色调校</b>：磨皮、美白、肤色冷暖都能调，是很自然的那种好看，不会糊成塑料脸。拍视频时连上 DJI Mimo 还能用 App 美颜。</p>
+          <div class="demo" style="gap:10px">
+            <svg viewBox="0 0 220 60" width="220" aria-hidden="true">
+              <text x="10" y="26" font-size="11" fill="#93707D" font-family="Noto Sans SC">磨皮</text>
+              <rect x="52" y="18" width="150" height="8" rx="4" fill="#F9D7DE"/><rect x="52" y="18" width="90" height="8" rx="4" fill="#EA5A7C"/><circle cx="142" cy="22" r="8" fill="#fff" stroke="#EA5A7C" stroke-width="2.5"/>
+              <text x="10" y="50" font-size="11" fill="#93707D" font-family="Noto Sans SC">美白</text>
+              <rect x="52" y="42" width="150" height="8" rx="4" fill="#F9D7DE"/><rect x="52" y="42" width="60" height="8" rx="4" fill="#EA5A7C"/><circle cx="112" cy="46" r="8" fill="#fff" stroke="#EA5A7C" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <p style="margin-top:14px;font-size:13px">建议开一点点就够——你本来的样子就已经很好看了，这点我 verified 过。</p>
+        </div>
+        <div class="card smart-card">
+          <h3>🎙️ 三个麦克风</h3>
+          <p>机身藏了 3 个麦克风，支持 OsmoAudio 四声道。说话的声音收得很清楚，风大的时候在设置里开降风噪。</p>
+          <div class="demo">
+            <svg viewBox="0 0 240 70" width="240" aria-hidden="true">
+              <g fill="#EA5A7C"><rect x="30" y="25" width="5" height="20" rx="2.5"><animate attributeName="height" values="20;34;20" dur="1s" repeatCount="indefinite"/></rect></g>
+              <g fill="#EA5A7C" opacity=".8"><rect x="45" y="18" width="5" height="34" rx="2.5"/><rect x="60" y="28" width="5" height="14" rx="2.5"/><rect x="75" y="14" width="5" height="42" rx="2.5"/><rect x="90" y="24" width="5" height="22" rx="2.5"/><rect x="105" y="18" width="5" height="34" rx="2.5"/><rect x="120" y="28" width="5" height="14" rx="2.5"/></g>
+              <text x="150" y="40" font-size="11" fill="#93707D" font-family="Noto Sans SC">立体声收声</text>
+            </svg>
+          </div>
+          <p style="margin-top:14px;font-size:13px">要是以后想认真录 vlog，它可以无线连 DJI 的麦克风，到时候我给你配上。</p>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 07 技巧 ============ -->
+<div class="sheet" id="sheet-tips" hidden role="dialog" aria-modal="true" aria-label="拍摄技巧">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 07 · 拍得更好看</div><h2>几个小心机，赢很大</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">设备只决定下限，下面这些技巧决定上限。都不难，记住一两个就够用了。</p>
+      <h3 class="sub-h">① 帧率怎么选</h3>
+      <div class="table-scroll">
+        <table class="frame-table">
+          <tr><th>场景</th><th>推荐设置</th><th>为什么</th></tr>
+          <tr><td>日常 vlog</td><td>4K / 30fps</td><td>画质和文件大小最平衡，手机剪辑不心疼</td></tr>
+          <tr><td>走动多、动作快</td><td>4K / 60fps</td><td>动作更顺滑，还能后期慢放一半速度</td></tr>
+          <tr><td>夜晚、室内暗光</td><td>低光视频 4K / 30fps</td><td>专用模式，暗光画面干净不糊</td></tr>
+          <tr><td>想拍「那一瞬间」</td><td>慢动作 4K / 240fps</td><td>八倍慢放，情绪拉满</td></tr>
+        </table>
+      </div>
+      <h3 class="sub-h">② 三种运镜，练会就出师</h3>
+      <div class="tip-row">
+        <div class="card tip-card">
+          <div class="tip-visual anim-pan"><div class="dot-move" style="top:48px;left:0"></div></div>
+          <h3>平移</h3>
+          <p>双脚站定，<b>用腰带动身体</b>慢慢左右转，手肘贴住身体。像转头看风景一样，画面就稳。</p>
+        </div>
+        <div class="card tip-card">
+          <div class="tip-visual anim-push" style="display:flex;align-items:center;justify-content:center"><div class="dot-move" style="position:static"></div></div>
+          <h3>推拉</h3>
+          <p>对着主体<b>匀速走近或退远</b>，脚步放慢放轻。走近是心动，退远是故事感。</p>
+        </div>
+        <div class="card tip-card">
+          <div class="tip-visual anim-orbit" style="display:flex;align-items:center;justify-content:center"><div style="position:relative;width:1px;height:1px"><div class="dot-move" style="position:absolute;top:-8px;left:-8px"></div></div></div>
+          <h3>环绕</h3>
+          <p>锁定智能跟随后，<b>绕着主体走一圈</b>，镜头会自动一直对着 TA。这个拍人绝美，信我。</p>
+        </div>
+      </div>
+      <h3 class="sub-h">③ 拍人好看的三个秘密</h3>
+      <div class="grid g3">
+        <div class="card op-card">
+          <div class="icon">📐</div>
+          <h3>镜头略高于眼睛</h3>
+          <p>举到比视线高一点、微微往下拍，显脸小。别开超近仰拍，会拍出双下巴（别问我怎么知道的）。</p>
+        </div>
+        <div class="card op-card">
+          <div class="icon">🌤️</div>
+          <h3>面朝光，别背对窗</h3>
+          <p>让光照在脸上：面朝窗户、面朝夕阳。背对光源人会变黑影，智能跟随在逆光下也容易跟丢。</p>
+        </div>
+        <div class="card op-card">
+          <div class="icon">#</div>
+          <h3>打开三分线</h3>
+          <p>在设置里开启构图参考线，把人放在交叉点上、地平线对齐横线，构图立刻专业起来。</p>
+        </div>
+      </div>
+      <div class="note">第三条是重点：环绕 + 智能跟随 + 慢动作，是我研究出来的「拍你」最优解。下次出去玩，第一站我们试试。</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 08 问答 ============ -->
+<div class="sheet" id="sheet-faq" hidden role="dialog" aria-modal="true" aria-label="常见问答">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 08 · 小贴士</div><h2>你可能会问的</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">我把官方帮助中心里新手最常卡壳的问题都整理好了，点开就有答案。</p>
+      <div class="faq">
+        <details open>
+          <summary>充一次电能用多久？<span class="chev">+</span></summary>
+          <div class="answer">日常拍拍停停，一天足够。内置 107GB 存储大约能录 <b>4K/60fps 视频 220 分钟</b>，或 1080p 约 600 分钟。长时间拍摄可以边充边拍，但注意：<b>录像时机身由电源直接供电，停止录制后才会充电</b>。</div>
+        </details>
+        <details>
+          <summary>视频怎么传到手机上？<span class="chev">+</span></summary>
+          <div class="answer">三种方式：① 打开 <b>DJI Mimo</b> 连接相机，选素材直接下载到手机相册；② 用 <b>USB-C 线连电脑</b>像 U 盘一样拷贝；③ 取了 microSD 卡用读卡器。发小红书/微信的话，第一种最方便。</div>
+        </details>
+        <details>
+          <summary>手机连不上相机了怎么办？<span class="chev">+</span></summary>
+          <div class="answer">按顺序试：确认手机 <b>Wi-Fi 和蓝牙都开着</b>；App 和相机固件升级到最新；还不行的话，在相机屏幕顶部下滑，进入 <b>Wireless Connection → Reset Connection</b> 重置连接（会清空 Wi-Fi 密码），再重新配对。</div>
+        </details>
+        <details>
+          <summary>跟着跟着人跟丢了？<span class="chev">+</span></summary>
+          <div class="answer">智能跟随在<b>逆光、昏暗环境</b>下容易失锁，回到光线好的地方，重新在屏幕上双击框选自己就好。另外全景和延时模式不支持跟随，多人跟随模式下不能变焦（先切好焦段再开跟随）。</div>
+        </details>
+        <details>
+          <summary>固件更新提示要不要点？<span class="chev">+</span></summary>
+          <div class="answer">要。连着 DJI Mimo 时如果弹出新固件，按提示更新就行，通常会带来新功能和稳定性修复。<b>更新过程中别关机、别退出 App</b>；万一失败，重启相机和手机再连一次就好。</div>
+        </details>
+        <details>
+          <summary>平时怎么收纳保护它？<span class="chev">+</span></summary>
+          <div class="answer">三轴云台是精密部件：关机后<b>扣上云台保护夹</b>再放进包里，别和钥匙硬物混放；镜头脏了用眼镜布轻轻擦。它不怕用，就怕压——多带它出门才是正经事。</div>
+        </details>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ 09 资源 ============ -->
+<div class="sheet" id="sheet-links" hidden role="dialog" aria-modal="true" aria-label="官方资源">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <button class="back-btn" data-close>‹ 返回</button>
+      <div class="sheet-title"><div class="crumb">CHAPTER 09 · 官方资源</div><h2>想看原版，入口在这</h2></div>
+    </div>
+    <div class="sheet-body"><div class="inner">
+      <p class="sheet-lead">我这份是「爱心翻译版」，原版官方资料也都给你收好了：</p>
+      <div class="grid g3">
+        <a class="card res-card" href="https://support.dji.com/help/content?customId=01700043695&spaceId=17&re=CN&lang=zh-CN&paperDocType=ARTICLE" target="_blank" rel="noopener">
+          <span class="icon">📖</span>
+          <h3>新手操作图解</h3>
+          <p>大疆帮助中心的官方图文教程，从开箱到每个设置的截图说明，最权威的版本。</p>
+          <span class="go">打开大疆帮助中心 →</span>
+        </a>
+        <a class="card res-card" href="https://www.dji.com/cn/osmo-pocket-4/video" target="_blank" rel="noopener">
+          <span class="icon">🎬</span>
+          <h3>官方介绍视频</h3>
+          <p>看看官方镜头下它能拍出什么——看完你会想立刻出门拍点什么。</p>
+          <span class="go">观看介绍视频 →</span>
+        </a>
+        <a class="card res-card" href="https://www.dji.com/cn/downloads/djiapp/dji-mimo" target="_blank" rel="noopener">
+          <span class="icon">📲</span>
+          <h3>下载 DJI Mimo</h3>
+          <p>相机的官方搭档 App：激活、导素材、剪辑模板、固件更新都靠它。</p>
+          <span class="go">前往下载页 →</span>
+        </a>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- 滚动渐显 ---- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* ---- 爱心爆裂 ---- */
+  function heartsBurst(x, y, n){
+    if(reduce) return;
+    var chars = ['🩷','💗','💕','❤️','♥'];
+    for(var i=0;i<n;i++){
+      var s = document.createElement('span');
+      s.className = 'fly-heart';
+      s.textContent = chars[Math.floor(Math.random()*chars.length)];
+      s.style.left = x + 'px'; s.style.top = y + 'px';
+      document.body.appendChild(s);
+      var ang = Math.random()*Math.PI*2, dist = 60 + Math.random()*130;
+      var dx = Math.cos(ang)*dist, dy = Math.sin(ang)*dist - 60;
+      s.animate([
+        {transform:'translate(0,0) scale(.4) rotate(0deg)', opacity:1},
+        {transform:'translate('+dx+'px,'+dy+'px) scale('+(0.9+Math.random()*0.9)+') rotate('+(Math.random()*80-40)+'deg)', opacity:0}
+      ], {duration:900+Math.random()*700, easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish = (function(el){ return function(){ el.remove(); }; })(s);
+    }
+  }
+
+  /* ---- Hero 旋屏开机 ---- */
+  var cam = document.getElementById('heroCamera');
+  var caption = document.getElementById('bootCaption');
+  function boot(){
+    var wasOn = cam.classList.contains('on');
+    cam.classList.toggle('on');
+    if(!wasOn){
+      caption.innerHTML = '<strong>开机啦 ♥</strong> 它说：准备好记录你了';
+      var r = cam.getBoundingClientRect();
+      heartsBurst(r.left + r.width/2, r.top + r.height*0.25, 14);
+      var letter = document.getElementById('letter');
+      setTimeout(function(){ letter.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'}); }, 1100);
+    }else{
+      caption.innerHTML = '和真机一样——<strong>点一下屏幕</strong>，旋转开机';
+    }
+  }
+  cam.addEventListener('click', boot);
+  cam.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); boot(); } });
+
+  /* ---- 花瓣背景 ---- */
+  if(!reduce){
+    var hero = document.getElementById('intro');
+    var glyphs = ['❀','✿','♥','❁'];
+    for(var i=0;i<8;i++){
+      var p = document.createElement('span');
+      p.className = 'petal';
+      p.textContent = glyphs[i % glyphs.length];
+      p.style.left = Math.random()*100 + '%';
+      p.style.top = '-8vh';
+      p.style.fontSize = (12 + Math.random()*14) + 'px';
+      p.style.animationDuration = (10 + Math.random()*10) + 's';
+      p.style.animationDelay = (-Math.random()*14) + 's';
+      hero.appendChild(p);
+    }
+  }
+
+  /* ---- 章节抽屉 ---- */
+  var openSheetEl = null;
+  function openSheet(id, push){
+    var sheet = document.getElementById(id);
+    if(!sheet || openSheetEl === sheet) return;
+    sheet.hidden = false;
+    void sheet.offsetWidth; /* reflow，保证过渡生效 */
+    sheet.classList.add('open');
+    openSheetEl = sheet;
+    document.documentElement.style.overflow = 'hidden';
+    sheet.querySelector('.sheet-body').scrollTop = 0;
+    var back = sheet.querySelector('.back-btn');
+    if(back) back.focus({preventScroll:true});
+    if(push !== false){
+      try{ history.pushState({sheet:id}, ''); }catch(e){}
+    }
+  }
+  function closeSheet(push){
+    if(!openSheetEl) return;
+    var sheet = openSheetEl;
+    openSheetEl = null;
+    sheet.classList.remove('open');
+    document.documentElement.style.overflow = '';
+    setTimeout(function(){ sheet.hidden = true; }, 520);
+  }
+  document.querySelectorAll('.chapter-card').forEach(function(card){
+    card.addEventListener('click', function(){ openSheet(card.dataset.sheet); });
+  });
+  document.querySelectorAll('[data-close]').forEach(function(btn){
+    btn.addEventListener('click', function(){ history.length > 1 ? history.back() : closeSheet(false); });
+  });
+  window.addEventListener('popstate', function(){ closeSheet(false); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && openSheetEl) closeSheet(false);
+  });
+  /* PC：点遮罩空白处关闭 */
+  document.querySelectorAll('.sheet').forEach(function(sheet){
+    sheet.addEventListener('click', function(e){
+      if(e.target === sheet && window.innerWidth >= 760) closeSheet(false);
+    });
+  });
+
+  /* ---- 机身图解联动 ---- */
+  function lit(key){
+    document.querySelectorAll('.hotspot').forEach(function(h){ h.classList.toggle('lit', h.dataset.key===key); });
+    document.querySelectorAll('.legend-item').forEach(function(l){ l.classList.toggle('lit', l.dataset.key===key); });
+  }
+  document.querySelectorAll('.hotspot').forEach(function(h){
+    h.addEventListener('click', function(){ lit(h.dataset.key); });
+  });
+  document.querySelectorAll('.legend-item').forEach(function(l){
+    l.addEventListener('click', function(){ lit(l.dataset.key); });
+  });
+
+  /* ---- 云台模式 tabs ---- */
+  document.querySelectorAll('.gtab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.gtab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.gpanel').forEach(function(p){ p.classList.remove('show'); });
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.panel).classList.add('show');
+    });
+  });
+
+  /* ---- 信里的大爱心 ---- */
+  var fh = document.getElementById('finaleHeart');
+  fh.addEventListener('click', function(){
+    var r = fh.getBoundingClientRect();
+    heartsBurst(r.left + r.width/2, r.top + r.height/2, 18);
+  });
+})();
+</script>
+</body>
+</html>
