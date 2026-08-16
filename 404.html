@@ -2,16 +2,34 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Single Page App</title>
+    <title>Redirecting...</title>
     <script type="text/javascript">
-      // 获取当前页面的完整路径
-      var l = window.location;
-      // 重定向到 index.html，并把原始路径作为参数传递
-      window.location.replace(
-        l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "") + "/?/" +
-          l.pathname.slice(1) + l.search + l.hash
-      );
+      (function() {
+        // 获取当前完整路径
+        var l = window.location;
+        
+        // 关键修复：手动指定你的项目子路径
+        var projectBase = '/pocket/';  // ← 改成你的项目名，前后都要有斜杠
+        
+        // 获取当前路径中，项目根目录之后的部分
+        // 例如：/pocket/article/unboxing → /article/unboxing
+        var path = l.pathname.replace(projectBase, '');
+        
+        // 如果路径为空（即访问根目录 /pocket/），则设为 '/'
+        if (!path || path === '/') {
+          path = '/';
+        }
+        
+        // 构建最终的重定向 URL
+        // 注意：这里用 "?" + path 来传递原始路径
+        var redirectUrl = l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "") + projectBase + "?/" + path + l.search + l.hash;
+        
+        // 执行重定向
+        window.location.replace(redirectUrl);
+      })();
     </script>
   </head>
-  <body></body>
+  <body>
+    Redirecting...
+  </body>
 </html>
